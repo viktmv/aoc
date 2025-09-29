@@ -44,13 +44,6 @@ class Grid:
 
         return self.rows[y][x]
 
-    def insert(self, p: Point) -> bool:
-        if not self.is_within_bounds(p):
-            return False
-
-        self.rows[p.y][p.x] = p
-        return True
-
     def is_within_bounds(self, p: Point) -> bool:
         if len(self.rows) == 0:
             return False

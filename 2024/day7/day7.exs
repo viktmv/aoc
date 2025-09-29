@@ -1,5 +1,5 @@
 defmodule Day7 do
-  @pathname "input_test.txt"
+  @pathname "input.txt"
 
   def run do
     File.read!(@pathname)

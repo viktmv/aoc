@@ -25,7 +25,6 @@ grouped = groupby_unsorted(points, key=lambda p: p.val)
 def get_delta(p1, p2):
     x = p2.x - p1.x
     y = p2.y - p1.y
-
     return x, y
 
 
@@ -92,7 +91,7 @@ def part_2():
         nodes = list(group)
         generate_antinodes_adjusted(nodes)
 
-    print("result: ", len(grid.filter(lambda p: p.val != ".")))
+    print("result: ", len(grid.filter(lambda p: p.val == "#")))
 
 
 part_2()

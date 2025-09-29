@@ -30,21 +30,22 @@ func main() {
 	stones := make([]string, 0, 1000)
 	for _, s := range strings.Split(line, " ") {
 		if s != "\n" && s != " " {
-			fmt.Println(s)
 			stones = append(stones, s)
 		}
 	}
 
 	fmt.Printf("%v\n", stones)
-	i := 1
-	for range 75 {
-		stones = blink(stones)
-		fmt.Printf("%d: %v\n", i, len(stones))
-		i++
-	}
+	what := blink(stones, 75)
+	fmt.Printf("%d\n", what)
 }
 
-func blink(stones []string) []string {
+func blink(stones []string, counter int) int {
+	fmt.Printf("%d\n", counter)
+
+	if counter == 0 {
+		return len(stones)
+	}
+
 	i := 0
 	length := len(stones)
 
@@ -84,7 +85,7 @@ func blink(stones []string) []string {
 		i++
 	}
 
-	return stones
+	return blink(stones, counter-1)
 }
 
 func mustAtoi(s string) int {

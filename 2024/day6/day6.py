@@ -10,7 +10,7 @@ class Point:
         self.val = val
 
     def __repr__(self) -> str:
-        return f"Point: x={self.x}; y={self.y}; val={self.val}"
+        return f"Point: x={self.x}; y={self.y}; val={self.val}; visited={self.visited}"
 
 
 class Grid:
@@ -61,7 +61,7 @@ class Grid:
 
 
 def read_file():
-    with open("input_test.txt") as datafile:
+    with open("input.txt") as datafile:
         return datafile.read()
 
 
@@ -80,25 +80,81 @@ def find_guard(grid: Grid):
 
 
 start_pos = find_guard(grid)
-current_pos = start_pos
-counter = 0
-current_dir = start_pos.val
 
-while current_pos and grid.is_within_bounds(current_pos):
-    current_pos.visited = True
+
+def get_next_position(grid, current_pos, current_dir):
     cx, cy = dirs[str(current_dir)]
     next_pos = grid.get_point(x=current_pos.x + cx, y=current_pos.y + cy)
 
     if not next_pos:
-        break
+        return None, None
 
     if next_pos.val == "#":
-        current_dir = next_dirs[current_dir]
-        cx, cy = dirs[current_dir]
+        next_dir = next_dirs[current_dir]
+        cx, cy = dirs[next_dir]
         next_pos = grid.get_point(x=current_pos.x + cx, y=current_pos.y + cy)
-        current_pos = next_pos
+        return next_pos, next_dir
     else:
-        current_pos = next_pos
+        return next_pos, current_dir
 
+
+def walk_grid(grid: Grid, start_pos: Point):
+    current_pos = start_pos
+    current_dir = start_pos.val
+
+    while current_pos and grid.is_within_bounds(current_pos):
+        current_pos.visited = True
+        current_pos, current_dir = get_next_position(grid, current_pos, current_dir)
+
+
+def loops_back(grid: Grid, start_pos: Point, direction=start_pos.val) -> bool:
+    curr = start_pos
+    k = {}
+
+    while curr:
+        k[(curr, dir)] = 1
+        curr, direction = get_next_position(grid, curr, direction)
+        key = (curr, direction)
+        if key in k:
+            return True
+
+    return False
+
+
+def count_loops(grid: Grid, start_pos: Point, direction=start_pos.val) -> int:
+    current_pos = start_pos
+    current_dir = direction or start_pos.val
+    possible_obstruction_points = []
+
+    while current_pos and grid.is_within_bounds(current_pos):
+        current_pos.visited = True
+        cx, cy = dirs[str(current_dir)]
+        next_pos = grid.get_point(x=current_pos.x + cx, y=current_pos.y + cy)
+
+        if not next_pos:
+            break
+
+        if next_pos.val != "#":
+            val = next_pos.val 
+            next_pos.val = "#"
+            if loops_back(grid, start_pos, direction):
+                possible_obstruction_points.append(next_pos)
+                print('loops back')
+            next_pos.val = val
+
+        if next_pos.val == "#":
+            current_dir = next_dirs[current_dir]
+            cx, cy = dirs[current_dir]
+            next_pos = grid.get_point(x=current_pos.x + cx, y=current_pos.y + cy)
+            current_pos = next_pos
+        else:
+            current_pos = next_pos
+
+    return len(set(possible_obstruction_points))
+
+
+walk_grid(grid, start_pos)
 pt1_results = len(grid.filter(lambda p: p.visited == True))
-print(pt1_results)
+
+print("count of guarded points:", pt1_results)
+print("possible obstruction count:", count_loops(grid, start_pos))
