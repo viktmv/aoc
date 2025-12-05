@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	f, err := os.Open("input_test")
+	f, err := os.Open("input")
 
 	if err != nil {
 		log.Fatalf("could not open file %e", err)
@@ -45,6 +45,26 @@ func main() {
 	// }
 
 	// day 2
+	for i := range(banks) {
+		bank := banks[i]
+		maxValue := ""
+		maxNum := 0
+		maxIdx := -1
+		for k := 12; k > 0; k-- {
+			for j := maxIdx + 1; j <= len(bank)-k; j++ {
+				if maxNum < mustAtoI(bank[j]) {
+					maxNum = mustAtoI(bank[j])
+					maxIdx = j
+				}
+			}
+
+			maxValue += strconv.Itoa(maxNum)
+			maxNum = 0
+		}
+
+		log.Printf("bank %v", maxValue)
+		sum += mustAtoI(maxValue)
+	}
 
 	log.Printf("sum: %d", sum)
 }
